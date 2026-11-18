@@ -10,6 +10,7 @@ This utility searches Rubrik RSC for Microsoft SQL Server database and Availabil
 - Calls `mssqlRecoverableRanges` for each matching workload.
 - Keeps the newest valid `endTime` returned for each database workload.
 - Saves the result to the `reports` folder and logs skipped or failed records under `logs`.
+- Displays a progress bar while querying recovery ranges and full-backup snapshots for each workload.
 
 ## Requirements
 
@@ -87,6 +88,7 @@ Columns:
 
 - `hostname`: the hostname or Availability Group search term associated with the workload
 - `databaseName`: the MSSQL database or workload name
+- `objectStatus`: `Active` or `Relic`, based on the MSSQL search result
 - `lastest_log_recovery_point`: newest log recovery end time converted to the configured timezone
 - `last_full_backup`: latest MSSQL snapshot/full-backup date converted to the configured timezone
 

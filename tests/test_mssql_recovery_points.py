@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from controller import controller
-from data import data_parser
+from data import data_operation, data_parser
 from data.data_operation import extract_latest_mssql_recovery_points
 from file_manager.write_to_file import _normalize_output_datetime
 from model.protected_object import ProtectedObject
@@ -106,6 +106,23 @@ class MSSQLRecoveryPointsTest(unittest.TestCase):
             ["10.20.30.40"],
         )
 
+    def test_create_object_from_data_records_relic_status(self):
+        active = data_operation.create_object_from_data({
+            "id": "active-1",
+            "name": "ActiveDB",
+            "objectType": "Mssql",
+            "isRelic": False,
+        })
+        relic = data_operation.create_object_from_data({
+            "id": "relic-1",
+            "name": "RelicDB",
+            "objectType": "Mssql",
+            "isRelic": True,
+        })
+
+        self.assertFalse(active.is_relic)
+        self.assertTrue(relic.is_relic)
+
     def test_normalize_output_datetime_uses_brazil_timezone(self):
         self.assertEqual(
             _normalize_output_datetime("2024-01-08T00:00:00+00:00"),
@@ -123,12 +140,14 @@ class MSSQLRecoveryPointsTest(unittest.TestCase):
             name="Finance",
             object_type="Mssql",
             location="sql-host-04",
+            is_relic=True,
         )
 
         points = data_parser.get_latest_recovery_points_for_workload("token", workload)
 
         self.assertEqual(points[0]["lastest_log_recovery_point"].isoformat(), "2026-01-10T10:00:00+00:00")
         self.assertEqual(points[0]["last_full_backup"].isoformat(), "2026-01-09T08:30:00+00:00")
+        self.assertEqual(points[0]["objectStatus"], "Relic")
 
 
 if __name__ == "__main__":

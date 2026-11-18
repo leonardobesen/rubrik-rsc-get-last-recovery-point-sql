@@ -28,7 +28,7 @@ def get_mssql_protected_objects(
             response = request(access_token, query, variables)
             nodes = response.get("data", {}).get("globalSearchResults", {}).get("nodes", [])
         except Exception:
-            logger.warning("Failed to fetch MSSQL object data for host %s", hostname)
+            logger.exception("Failed to fetch MSSQL object data for host %s", hostname)
             continue
 
         if not nodes:
@@ -110,8 +110,10 @@ def get_latest_recovery_points_for_workload(
     except Exception:
         logger.exception("Failed to fetch full backup snapshot data for workload %s (%s)", workload.name, workload.id)
 
+    object_status = "Relic" if workload.is_relic else "Active"
     for point in latest_points:
         point["last_full_backup"] = last_full_backup
+        point["objectStatus"] = object_status
         point["objectId"] = workload.id
         point["objectName"] = workload.name
         point["objectType"] = workload.object_type

@@ -15,7 +15,8 @@ def create_object_from_data(data: dict) -> ProtectedObject | None:
             name=data["name"],
             object_type=data["objectType"],
             sla_id=data.get("effectiveSlaDomain", {}).get("id", ""),
-            sla_name=data.get("effectiveSlaDomain", {}).get("name", "")
+            sla_name=data.get("effectiveSlaDomain", {}).get("name", ""),
+            is_relic=bool(data.get("isRelic", False)),
         )
         protect_obj.location = data.get("hostAddress", "")
         return protect_obj

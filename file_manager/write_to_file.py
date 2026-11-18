@@ -51,6 +51,7 @@ def generate_mssql_recovery_report(report_name: str, rows: list[dict]) -> str:
     columns = [
         "hostname",
         "databaseName",
+        "objectStatus",
         "lastest_log_recovery_point",
         "last_full_backup",
     ]

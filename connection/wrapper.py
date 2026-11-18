@@ -22,13 +22,25 @@ def request(access_token: str, query: str, variables=None) -> dict:
 
     if not variables:
         response = requests.post(
-            base_url, json={'query': query}, headers=headers, verify=False)
+            base_url, json={'query': query}, headers=headers, verify=False, timeout=60)
     else:
-        response = requests.post(base_url, json={
-                                 'query': query, 'variables': variables}, headers=headers, verify=False)
+        response = requests.post(
+            base_url,
+            json={'query': query, 'variables': variables},
+            headers=headers,
+            verify=False,
+            timeout=60,
+        )
 
     if response.status_code != 200:
         raise ValueError(
             f"Response failed with error code {response.status_code}: \n{response.text}")
 
-    return response.json()
+    result = response.json()
+    if result.get("errors"):
+        messages = []
+        for error in result["errors"]:
+            messages.append(error.get("message", str(error)))
+        raise ValueError("GraphQL errors: " + "; ".join(messages))
+
+    return result

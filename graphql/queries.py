@@ -3,8 +3,6 @@ def search_mssql_object_by_hostname(hostname: str, cluster_ids: list[str] | None
     variables = {
         "filter": [
             {"field": "LOCATION", "texts": [hostname]},
-            {"field": "IS_GHOST", "texts": ["false"]},
-            {"field": "IS_ACTIVE", "texts": ["true"]},
         ],
         "sortBy": "NAME",
         "sortOrder": "ASC",
@@ -34,6 +32,9 @@ def search_mssql_object_by_hostname(hostname: str, cluster_ids: list[str] | None
           effectiveSlaDomain {
             id
             name
+          }
+          ... on MssqlDatabase {
+            isRelic
           }
         }
       }

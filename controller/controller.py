@@ -6,6 +6,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from tqdm import tqdm
+
 import configuration.configuration as conf
 from data import data_parser
 from model.protected_object import ProtectedObject
@@ -196,7 +198,7 @@ def get_mssql_recovery_points(
     )
 
     recovery_points: list[dict] = []
-    for workload in mssql_objects:
+    for workload in tqdm(mssql_objects, desc="Processing workloads", unit="workload"):
         recovery_points.extend(
             data_parser.get_latest_recovery_points_for_workload(access_token, workload)
         )
